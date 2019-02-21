@@ -2,7 +2,7 @@ import * as debug from "debug";
 import * as http from "http";
 
 
-import Server from "./protocols/http";
+import Server from "./src/protocols/http";
 
 debug("ts-support:server");
 
