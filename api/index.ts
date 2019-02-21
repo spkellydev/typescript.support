@@ -1,24 +1,60 @@
-import * as Express from 'express';
+import * as debug from "debug";
+import * as http from "http";
 
-class TypeScriptSupport {
-    private app: Express.Application;
-    private port: number;
-    constructor(port?: number) {
-        this.app = Express();
-        this.port = port || 8080;
+
+import Server from "./protocols/http";
+
+debug("ts-support:server");
+
+class Main {
+    port: any = this.normalizePort(process.env.PORT || 8080);
+    server: http.Server;
+    constructor() {
+        Server.set("port", this.port);
+        this.server = http.createServer(Server);
     }
 
-    generate(): void {
-        this.app.get("/", (req: Express.Request, res: Express.Response) => {
-            res.json({ hello: "world" });
-        });
+    run() {
+        this.server.listen(this.port);
+        this.server.on("error", this.onError);
+        this.server.on("listening", this.onListening);
     }
 
-    run(callback: () => void = () => console.log("App started on port", this.port)): void {
-        this.app.listen(this.port, callback);
+    private normalizePort(val: number | string): number | string | boolean {
+        const port: number = typeof val === "string" ? parseInt(val, 10) : val;
+        if (isNaN(port)) {
+            return val;
+        } else if (port >= 0) {
+            return port;
+        } else {
+            return false;
+        }
+    }
+
+    onListening = () => {
+        const addr = this.server.address();
+        const bind = typeof addr === "string" ? `pipe ${addr}` : `port ${addr.port}`;
+        console.log(`Listening on ${bind}`);
+    }
+
+    onError = (error: NodeJS.ErrnoException): void => {
+        if (error.syscall !== "listen") {
+            console.log(error);
+        }
+        const bind = typeof this.port === "string" ? "Pipe " + this.port : "Port " + this.port;
+        switch (error.code) {
+            case "EACCES":
+                console.error(`${bind} requires elevated privileges`);
+                process.exit(1);
+                break;
+            case "EADDRINUSE":
+                console.error(`${bind} is already in use`);
+                process.exit(1);
+                break;
+            default:
+                console.log(error);
+        }
     }
 }
 
-const app = new TypeScriptSupport();
-app.generate();
-app.run();
+new Main().run();
