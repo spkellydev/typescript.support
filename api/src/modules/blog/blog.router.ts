@@ -1,5 +1,11 @@
 import { Router } from "express";
-import blogController from './controllers/controllers.blog';
+import blogController, { BlogController } from './controllers/controllers.blog';
+
+interface ControllerMetadata {
+    route: string,
+    method: string,
+    target: string
+}
 
 class BlogModuleRouter {
     public router: Router;
@@ -9,7 +15,14 @@ class BlogModuleRouter {
     }
 
     build() {
-        this.router.get("/", blogController.good)
+        
+        let metadata = Reflect.getMetadata("routeCallbacks", blogController);
+        // endpoints
+        Array.from(metadata).map((ep: ControllerMetadata) => {
+            this.router[ep.method](ep.route, blogController[ep.target]);
+        });
+        // console.log(metadata);
+        // this.router.get("/", blogController.good)
     }
 }
 

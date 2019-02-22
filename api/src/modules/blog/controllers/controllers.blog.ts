@@ -45,13 +45,41 @@ function Injectable() {
   return DecoratorFactory
 }
 
+function Controller(route: string): ClassDecorator {
+    return (target) => {
+        Reflect.defineMetadata('controller', route, target.prototype);
+        let routeFns: Array<() => void> = Reflect.getMetadata("routeCallbacks", target.prototype);
+        if (routeFns) {
+            routeFns.forEach(fn => fn);
+        }
+        
+        return target;
+    }
+}
+
+function Get(route: string): any {
+    return function (target: any, key: string, descriptor: PropertyDescriptor) {
+        let routeFns = Reflect.getMetadata("routeCallbacks", target);
+        if (!routeFns) {
+            Reflect.defineMetadata("routeCallbacks", routeFns = [], target);
+        }
+        console.log(target, key)
+        routeFns.push({
+            route,
+            method: "get",
+            target: key
+        });
+    }
+}
 
 class Foo { getGood() { return "good" } }
 
 @Injectable()
-class BlogController {
+@Controller("/blog")
+export class BlogController {
     constructor(private foo: Foo) {}
     
+    @Get("/")
     good = (req: Request, res: Response) => {
         res.json({ blog: this.foo.getGood() });
     }
