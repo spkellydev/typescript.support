@@ -2,7 +2,7 @@ import 'mocha';
 import { expect } from 'chai';
 import * as sinon from 'sinon';
 import * as http from 'http';
-import Server from './http';
+import Server from './protocols.http';
 import { Request, Response } from 'express';
 
 class MockServer {

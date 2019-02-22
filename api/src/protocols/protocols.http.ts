@@ -11,6 +11,9 @@ import * as mongoose from "mongoose";
 import * as bodyParser from "body-parser";
 import * as compression from "compression";
 import { RequestHandler } from "express-serve-static-core";
+import RouterPipeline from "../core/pipeline/pipeline.routers";
+
+import BlogRouter from '../modules/blog/blog.router';
 
 const dev = process.env.NODE_ENV !== "production";
 type Middlewares = RequestHandler[];
@@ -46,10 +49,10 @@ class HttpServer {
     }
 
     routes() {
-        const router = express.Router();
-        this.app.use("/", (req, res) => {
-            res.json({ hello: "world" });
-        });
+        const routerPipeline = new RouterPipeline(this.app, [
+            { prefix: "/blog", router: BlogRouter.router }
+        ]);
+        routerPipeline.buildRouters();
     }
 }
 
