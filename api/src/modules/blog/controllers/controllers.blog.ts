@@ -3,7 +3,10 @@ import { Request, Response } from "express";
 
 const ANNOTATIONS = "__annotations__";
 
-class ReflectiveInjector {
+export const Controllers = new Map();
+export const Services = new Map();
+
+export class ReflectiveInjector {
     private static records: { token:any, deps:any }[] = []
 
     static resolveAndCreate(tokens: Array<any>) {
@@ -12,9 +15,6 @@ class ReflectiveInjector {
                 token,
                 deps: Reflect.getOwnMetadata('design:paramtypes', token)
             })
-
-            // const value = Reflect.getMetadata(Get, token, "method")
-            // console.log(value);
         })
         return this
     }
@@ -45,8 +45,22 @@ function Injectable() {
   return DecoratorFactory
 }
 
+function Service(service) {
+    function DecoratorFactory(cls: any, objOrType?: any) {
+        Services.set(cls.name, service);
+        const annotationInstance = objOrType;
+        const annotations = cls.hasOwnProperty(ANNOTATIONS) ?
+            (cls as any)[ANNOTATIONS] :
+            Object.defineProperty(cls, ANNOTATIONS, {value: []})[ANNOTATIONS];
+        annotations.push(annotationInstance);
+        return cls;
+    }
+  return DecoratorFactory
+}
+
 function Controller(route: string): ClassDecorator {
     return (target) => {
+        Controllers.set(target.name, target);
         Reflect.defineMetadata('controller', route, target.prototype);
         let routeFns: Array<() => void> = Reflect.getMetadata("routeCallbacks", target.prototype);
         if (routeFns) {
@@ -63,7 +77,7 @@ function Get(route: string): any {
         if (!routeFns) {
             Reflect.defineMetadata("routeCallbacks", routeFns = [], target);
         }
-        console.log(target, key)
+        
         routeFns.push({
             route,
             method: "get",
@@ -72,9 +86,9 @@ function Get(route: string): any {
     }
 }
 
-class Foo { getGood() { return "good" } }
+export class Foo { getGood() { return "good" } }
 
-@Injectable()
+@Service(Foo)
 @Controller("/blog")
 export class BlogController {
     constructor(private foo: Foo) {}
@@ -85,7 +99,4 @@ export class BlogController {
     }
 }
 
-const injector = ReflectiveInjector.resolveAndCreate([Foo, BlogController]);
-const blogController = injector.get(BlogController);
-
-export default blogController as BlogController;
+export default BlogController;

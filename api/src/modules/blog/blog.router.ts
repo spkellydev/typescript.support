@@ -1,5 +1,5 @@
 import { Router } from "express";
-import blogController, { BlogController } from './controllers/controllers.blog';
+import { Controllers, ReflectiveInjector, Services } from './controllers/controllers.blog';
 
 interface ControllerMetadata {
     route: string,
@@ -15,14 +15,19 @@ class BlogModuleRouter {
     }
 
     build() {
-        
-        let metadata = Reflect.getMetadata("routeCallbacks", blogController);
-        // endpoints
-        Array.from(metadata).map((ep: ControllerMetadata) => {
-            this.router[ep.method](ep.route, blogController[ep.target]);
+        Array.from(Controllers.entries()).map(module => {
+            const [key, controller] = module;
+            const service = Services.get(key);
+            
+            const injector = ReflectiveInjector.resolveAndCreate([service, controller]);
+            const injected = injector.get(controller);
+
+            let metadata = Reflect.getMetadata("routeCallbacks", injected);
+            // endpoints
+            Array.from(metadata).map((ep: ControllerMetadata) => {
+                this.router[ep.method](ep.route, injected[ep.target]);
+            });
         });
-        // console.log(metadata);
-        // this.router.get("/", blogController.good)
     }
 }
 
