@@ -1,11 +1,12 @@
 import "reflect-metadata";
 
-export default class InjectionFactory {
+export class ReflectiveInjector {
     private static records: { token:any, deps:any }[] = []
-
+    static ControllerMap = new Map();
+    static ServiceMap = new Map(); 
     static resolveAndCreate(tokens: Array<any>) {
         tokens.forEach((token:any)=> {
-            InjectionFactory.records.push({
+            ReflectiveInjector.records.push({
                 token,
                 deps: Reflect.getOwnMetadata('design:paramtypes', token)
             })
@@ -14,7 +15,7 @@ export default class InjectionFactory {
     }
     static get(_token: any) {
         // get the `token` from the record set
-        const [record] = InjectionFactory.records.filter((record)=>{
+        const [record] = ReflectiveInjector.records.filter((record)=>{
             return record.token == _token
         })
         let {token, deps} = record
