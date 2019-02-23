@@ -1,5 +1,3 @@
-import "reflect-metadata";
-
 export class ReflectiveInjector {
     private static records: { token:any, deps:any }[] = []
     static ControllerMap = new Map();

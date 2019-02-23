@@ -2,17 +2,15 @@
  * @package Typescript.support Express API
  * @version 0.0.0.0
  */
-import * as fs from "fs";
-import * as cors from "cors";
 import * as logger from "morgan";
 import * as helmet from "helmet";
 import * as express from "express";
-import * as mongoose from "mongoose";
 import * as bodyParser from "body-parser";
 import * as compression from "compression";
 import { RequestHandler } from "express-serve-static-core";
 import RouterPipeline from "../core/pipeline/pipeline.routers";
-import BlogModule from "../modules/blog/modules.blog";
+import BlogModule from "../modules/blog/blog.module";
+import { BaseModuleImpl } from "../core/mvc/mvc.interfaces";
 
 const dev = process.env.NODE_ENV !== "production";
 type Middlewares = RequestHandler[];
@@ -48,9 +46,8 @@ class HttpServer {
     }
 
     routes() {
-        const routerPipeline = new RouterPipeline([
-            BlogModule
-        ]);
+        const modules = <BaseModuleImpl[]>[BlogModule];
+        const routerPipeline = new RouterPipeline(modules);
         this.app.use(routerPipeline.router);
     }
 }

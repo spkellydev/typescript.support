@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { ReflectiveInjector } from '../injection/injection.factory';
+import { BaseModuleImpl } from '../mvc/mvc.interfaces';
 const { ServiceMap, ControllerMap } = ReflectiveInjector;
 
 interface EndpointMetadata {
@@ -10,10 +11,10 @@ interface EndpointMetadata {
 
 export default class RouterPipeline {
     router: Router;
-    constructor(private controllers: any) {
+    constructor(private modules: Array<BaseModuleImpl>) {
         this.router = Router();
         this.build();
-        this.controllers = controllers;
+        this.modules = modules;
     }
 
     build() {

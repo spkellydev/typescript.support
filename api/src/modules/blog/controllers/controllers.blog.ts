@@ -1,16 +1,19 @@
 import { Request, Response } from "express";
 import { Service, Controller, Get } from "../../../core/injection/injection.decorator";
+import { BaseControllerImpl } from "../../../core/mvc/mvc.interfaces";
+import { createConnection } from "typeorm";
+import BlogService from "../blog.repo";
 
-export class Foo { getGood() { return "world" } }
 
-@Service(Foo)
+
+@Service(BlogService)
 @Controller("/blog")
-class BlogController {
-    constructor(private foo: Foo) {}
+class BlogController implements BaseControllerImpl {
+    constructor(private service: BlogService) {}
     
     @Get("/")
-    good = (req: Request, res: Response) => {
-        res.json({ blog: this.foo.getGood() });
+    good = async (req: Request, res: Response) => {
+        res.json({ hello: await this.service.getAllPosts() })
     }
 }
 

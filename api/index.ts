@@ -1,6 +1,6 @@
 import * as debug from "debug";
 import * as http from "http";
-
+import "reflect-metadata";
 
 import Server from "./src/protocols/protocols.http";
 
