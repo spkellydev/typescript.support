@@ -1,7 +1,7 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
-export class Post {
+export class PostEntity {
     @PrimaryGeneratedColumn()
     id: number;
     @Column({ length: 255 })
@@ -11,4 +11,10 @@ export class Post {
     @Column()
     cover: string;
     author: number;
+
+    build({ title, content, cover, ...removed }) {
+        this.title = title;
+        this.content = content;
+        this.cover = cover;
+    }
 }

@@ -54,3 +54,63 @@ export function Get(route: string): any {
         });
     }
 }
+
+export function Post(route: string): any {
+    return function (target: any, key: string, descriptor: PropertyDescriptor) {
+        let routeFns = Reflect.getMetadata("routeCallbacks", target);
+        if (!routeFns) {
+            Reflect.defineMetadata("routeCallbacks", routeFns = [], target);
+        }
+        
+        routeFns.push({
+            route,
+            method: "post",
+            target: key
+        });
+    }
+}
+
+export function Patch(route: string): any {
+    return function (target: any, key: string, descriptor: PropertyDescriptor) {
+        let routeFns = Reflect.getMetadata("routeCallbacks", target);
+        if (!routeFns) {
+            Reflect.defineMetadata("routeCallbacks", routeFns = [], target);
+        }
+        
+        routeFns.push({
+            route,
+            method: "patch",
+            target: key
+        });
+    }
+}
+
+export function Update(route: string): any {
+    return function (target: any, key: string, descriptor: PropertyDescriptor) {
+        let routeFns = Reflect.getMetadata("routeCallbacks", target);
+        if (!routeFns) {
+            Reflect.defineMetadata("routeCallbacks", routeFns = [], target);
+        }
+        
+        routeFns.push({
+            route,
+            method: "update",
+            target: key
+        });
+    }
+}
+
+export function Delete(route: string): any {
+    return function (target: any, key: string, descriptor: PropertyDescriptor) {
+        let routeFns = Reflect.getMetadata("routeCallbacks", target);
+        if (!routeFns) {
+            Reflect.defineMetadata("routeCallbacks", routeFns = [], target);
+        }
+        
+        routeFns.push({
+            route,
+            method: "delete",
+            target: key
+        });
+    }
+}

@@ -1,8 +1,9 @@
 import { Request, Response } from "express";
-import { Service, Controller, Get } from "../../../core/injection/injection.decorator";
+import { Service, Controller, Get, Post } from "../../../core/injection/injection.decorator";
 import { BaseControllerImpl } from "../../../core/mvc/mvc.interfaces";
 import { createConnection } from "typeorm";
 import BlogService from "../blog.repo";
+import { PostEntity } from "../../entities/post.entity";
 
 
 
@@ -14,6 +15,15 @@ class BlogController implements BaseControllerImpl {
     @Get("/")
     good = async (req: Request, res: Response) => {
         res.json({ hello: await this.service.getAllPosts() })
+    }
+
+    @Post("/post/create")
+    gooder = async (req: Request, res: Response) => {
+        const { title, content, cover } = req.body;
+        const post = new PostEntity();
+        post.build({ title, content, cover });
+        const saved = await this.service.createPost(post);
+        res.json(saved);
     }
 }
 
