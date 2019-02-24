@@ -1,11 +1,14 @@
 import { MustActivate } from "../pipeline/pipeline.effects";
 import { Request, Response, NextFunction } from "express";
 import { decode } from "jwt-simple";
+import { Sealed, Singleton } from "./object.decorator";
 
 /**
  * Checks for an authorization header and then checks that authorization header against the jwt decoder.
  * If the header doesn't exist, fall through; if the token is bad, reject.
  */
+@Sealed
+@Singleton
 export default class AuthGuard implements MustActivate {
     mustActivate(req: Request, res: Response, next: NextFunction): void {
         if (!req.headers.authorization) {

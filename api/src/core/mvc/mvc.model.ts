@@ -13,4 +13,8 @@ export default abstract class BaseModel<T> implements Model {
     private async getRepo() {
         this.repo = await this.manager.connect(this.model) as Repository<T>;
     }
+
+    async getCustomRepo(model) {
+        return await this.manager.connect(model);
+    }
 }

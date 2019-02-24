@@ -1,12 +1,8 @@
 import { BaseControllerImpl } from "../../core/mvc/mvc.controller";
-import { Controller, Post, Service, Get } from "../../core/injection/injection.decorator";
+import { Controller, Post, Service } from "../../core/injection/injection.decorator";
 import { Request, Response } from "express";
 import AuthService, { Token } from "./auth.repo";
 import UserEntity from "../entities/user.entity";
-import AuthGuard from "../../core/security/auth.guard";
-
-// check for authentication headers
-const Guard = new AuthGuard();
 
 @Service(AuthService)
 @Controller("/sign")
@@ -35,15 +31,5 @@ export default class AuthController implements BaseControllerImpl {
         const token : Token | string = await this.service.createUser(user);
         if (token instanceof String) status = 403;
         res.status(status).json(token);
-    }
-
-    @Get({
-        route: "/token",
-        middleware: {
-            auth: Guard
-        }
-    })
-    signout = (req: Request, res: Response) => {
-        res.send("word?")
     }
 }

@@ -1,5 +1,7 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToOne, ManyToOne } from 'typeorm';
 import { Length, IsFQDN } from 'class-validator';
+import { PostMetaEntity } from './postmeta.entity';
+import UserEntity from './user.entity';
 
 @Entity("Post")
 export class PostEntity {
@@ -16,7 +18,14 @@ export class PostEntity {
     @IsFQDN()
     @Column()
     cover: string;
-    author: number;
+
+    @ManyToOne(type => UserEntity, author => author.posts)
+    author: UserEntity;
+
+    @OneToOne(type => PostMetaEntity, metadata => metadata.post, {
+        cascade: true
+    })
+    metadata: PostMetaEntity
 
     build({ title, content, cover, ...removed }) {
         this.title = title;

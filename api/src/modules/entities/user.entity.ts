@@ -1,6 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert, OneToMany } from "typeorm";
 import { IsEmail, Length } from "class-validator";
 import { hashSync, compare } from "bcryptjs";
+import { PostEntity } from "./post.entity";
 
 @Entity("User")
 export default class UserEntity {
@@ -14,6 +15,9 @@ export default class UserEntity {
     @Column()
     @Length(6, 18)
     password: string;
+
+    @OneToMany(type => PostEntity, post => post.author)
+    posts: PostEntity[]
 
     /**
      * @param userobj destructured user object

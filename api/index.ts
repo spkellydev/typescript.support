@@ -3,6 +3,7 @@ import * as http from "http";
 import "reflect-metadata";
 
 import Server from "./src/protocols/protocols.http";
+import autoscan from "./autoscan";
 
 debug("ts-support:server");
 

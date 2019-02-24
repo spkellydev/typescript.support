@@ -125,7 +125,7 @@ export function Update(endpoint: EndpointMetadataOptions): any {
         
         routeFns.push({
             endpoint,
-            method: "update",
+            method: "put",
             target: key
         });
     }

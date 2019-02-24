@@ -3,6 +3,13 @@
  */
 export type Controller = {}
 export abstract class BaseControllerImpl implements Controller {}
+export interface ControllerCrud extends Controller {
+    readAll(...any: any): void
+    create(...any: any): void
+    update(...any: any): void
+    delete(...any: any): void
+    readSingle(...any: any): void
+}
 
 /**
  * Base module which provides the Module type to every module in the application. Every module needs to have their controllers
