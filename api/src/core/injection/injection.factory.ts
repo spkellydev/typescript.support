@@ -1,7 +1,10 @@
+import { Controller } from "../mvc/mvc.controller";
+import { Model } from "../mvc/mvc.model";
+
 export class ReflectiveInjector {
     private static records: { token:any, deps:any }[] = []
-    static ControllerMap = new Map();
-    static ServiceMap = new Map(); 
+    static ControllerMap = new Map<string, Controller>();
+    static ServiceMap = new Map<string, Model>(); 
     static resolveAndCreate(tokens: Array<any>) {
         tokens.forEach((token:any)=> {
             ReflectiveInjector.records.push({

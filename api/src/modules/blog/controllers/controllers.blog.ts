@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import { Service, Controller, Get, Post } from "../../../core/injection/injection.decorator";
-import { BaseControllerImpl } from "../../../core/mvc/mvc.interfaces";
-import { createConnection } from "typeorm";
+import { BaseControllerImpl } from "../../../core/mvc/mvc.controller";
 import BlogService from "../blog.repo";
 import { PostEntity } from "../../entities/post.entity";
 

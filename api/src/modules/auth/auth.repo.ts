@@ -3,12 +3,21 @@ import UserEntity from "../entities/user.entity";
 import * as jwt from 'jwt-simple';
 import { validate } from "class-validator";
 
+// provides a Token type.
 export type Token = { token: string };
+
+/**
+ * A repository and means of communicating with the database for any UserEntity
+ */
 export default class AuthService extends BaseModel<UserEntity> {
     constructor() {
         super(UserEntity);
     }
 
+    /**
+     * @uses jwt-simple
+     * @param user validated user
+     */
     private tokenForUser(user: UserEntity): Token {
         const timestamp = new Date().getTime();
         const token = jwt.encode(
@@ -18,10 +27,14 @@ export default class AuthService extends BaseModel<UserEntity> {
         return { token };
     }
 
+    /**
+     * @uses validator
+     * @param user non-validated user
+     */
     async createUser(user: UserEntity): Promise<Token | string> {
         const errors = await validate(user);
         if (errors.length > 0) {
-            // reduce errors
+            // TODO: reduce errors
             return "errors creating user";
         }
         const foundUser = await this.repo.find({ email: user.email });
@@ -31,6 +44,10 @@ export default class AuthService extends BaseModel<UserEntity> {
         return this.tokenForUser(saved);
     }
 
+    /**
+     * @uses validator
+     * @param user non-validated user
+     */
     async signInUser(user: UserEntity): Promise<Token | string> {
         const errors = await validate(user);
         if (errors.length > 0) return "errors creating users";

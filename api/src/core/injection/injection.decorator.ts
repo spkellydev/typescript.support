@@ -1,8 +1,13 @@
 import { ReflectiveInjector } from "./injection.factory";
 import { EndpointMetadataOptions } from "../pipeline/pipeline.routers";
+import { Model } from "../mvc/mvc.model";
+import { Controller } from "../mvc/mvc.controller";
 const { ServiceMap, ControllerMap } = ReflectiveInjector;
 const ANNOTATIONS = "__annotations__";
 
+/**
+ * Allows any class to become an injectable constructor param.
+ */
 export function Injectable() {
     function DecoratorFactory(cls: any, objOrType?: any) {
         const annotationInstance = objOrType;
@@ -15,7 +20,12 @@ export function Injectable() {
   return DecoratorFactory
 }
 
-export function Service(service) {
+/**
+ * Inject a service directly into the constructor.
+ * TODO: Strong typing on service param
+ * @param service repository to inject
+ */
+export function Service(service: Model) {
     function DecoratorFactory(cls: any, objOrType?: any) {
         ServiceMap.set(cls.name, service);
         const annotationInstance = objOrType;
@@ -28,10 +38,14 @@ export function Service(service) {
   return DecoratorFactory
 }
 
-export function Controller(route: string): ClassDecorator {
+/**
+ * Defines an API controller
+ * @param endpoint parent path for any endpoint
+ */
+export function Controller(endpoint: string): ClassDecorator {
     return (target) => {
-        ControllerMap.set(target.name, target);
-        Reflect.defineMetadata('controller', route, target.prototype);
+        ControllerMap.set(target.name, target as Controller);
+        Reflect.defineMetadata('controller', endpoint, target.prototype);
         let routeFns: Array<() => void> = Reflect.getMetadata("routeCallbacks", target.prototype);
         if (routeFns) {
             routeFns.forEach(fn => fn);
@@ -41,7 +55,11 @@ export function Controller(route: string): ClassDecorator {
     }
 }
 
-export function Get(route: EndpointMetadataOptions): any {
+/**
+ * Defines a get request. Pass in a string or an object defining route and middleware.
+ * @param endpoint endpoint options for controller child
+ */
+export function Get(endpoint: EndpointMetadataOptions): any {
     return function (target: any, key: string, descriptor: PropertyDescriptor) {
         let routeFns = Reflect.getMetadata("routeCallbacks", target);
         if (!routeFns) {
@@ -49,14 +67,18 @@ export function Get(route: EndpointMetadataOptions): any {
         }
         
         routeFns.push({
-            endpoint: route,
+            endpoint,
             method: "get",
             target: key
         });
     }
 }
 
-export function Post(route: string): any {
+/**
+ * Defines a post request. Pass in a string or an object defining route and middleware.
+ * @param endpoint endpoint options for controller child
+ */
+export function Post(endpoint: EndpointMetadataOptions): any {
     return function (target: any, key: string, descriptor: PropertyDescriptor) {
         let routeFns = Reflect.getMetadata("routeCallbacks", target);
         if (!routeFns) {
@@ -64,14 +86,18 @@ export function Post(route: string): any {
         }
         
         routeFns.push({
-            endpoint: route,
+            endpoint,
             method: "post",
             target: key
         });
     }
 }
 
-export function Patch(route: string): any {
+/**
+ * Defines a patch request. Pass in a string or an object defining route and middleware.
+ * @param endpoint endpoint options for controller child
+ */
+export function Patch(endpoint: EndpointMetadataOptions): any {
     return function (target: any, key: string, descriptor: PropertyDescriptor) {
         let routeFns = Reflect.getMetadata("routeCallbacks", target);
         if (!routeFns) {
@@ -79,14 +105,18 @@ export function Patch(route: string): any {
         }
         
         routeFns.push({
-            endpoint: route,
+            endpoint,
             method: "patch",
             target: key
         });
     }
 }
 
-export function Update(route: string): any {
+/**
+ * Defines an update request. Pass in a string or an object defining route and middleware.
+ * @param endpoint endpoint options for controller child
+ */
+export function Update(endpoint: EndpointMetadataOptions): any {
     return function (target: any, key: string, descriptor: PropertyDescriptor) {
         let routeFns = Reflect.getMetadata("routeCallbacks", target);
         if (!routeFns) {
@@ -94,14 +124,18 @@ export function Update(route: string): any {
         }
         
         routeFns.push({
-            endpoint: route,
+            endpoint,
             method: "update",
             target: key
         });
     }
 }
 
-export function Delete(route: string): any {
+/**
+ * Defines a delete request. Pass in a string or an object defining route and middleware.
+ * @param endpoint endpoint options for controller child
+ */
+export function Delete(endpoint: EndpointMetadataOptions): any {
     return function (target: any, key: string, descriptor: PropertyDescriptor) {
         let routeFns = Reflect.getMetadata("routeCallbacks", target);
         if (!routeFns) {
@@ -109,7 +143,7 @@ export function Delete(route: string): any {
         }
         
         routeFns.push({
-            endpoint: route,
+            endpoint,
             method: "delete",
             target: key
         });
