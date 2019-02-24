@@ -1,5 +1,11 @@
-import { Connection, createConnection, Repository } from "typeorm";
+import { Connection, createConnection, Repository, EntitySchema } from "typeorm";
+import { Sealed, Singleton } from "../security/object.decorator";
 
+/**
+ * Provides a connection to the database.
+ */
+@Sealed
+@Singleton
 export default class DatabaseManager {
     connection: Promise<Connection>;
     constructor() {
@@ -17,7 +23,7 @@ export default class DatabaseManager {
         });
     }
 
-    async connect(service) {
+    async connect(service: EntitySchema): Promise<Repository<any>> {
         return await this.connection.then(async db => {
             return await db.getRepository(service);
         }).catch(err => {
