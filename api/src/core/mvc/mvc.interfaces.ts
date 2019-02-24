@@ -1,2 +1,6 @@
 export interface BaseControllerImpl {}
-export interface BaseModuleImpl {}
+export abstract class BaseModuleImpl implements Module {
+    controllers: BaseControllerImpl[]
+}
+
+export type Module = {}

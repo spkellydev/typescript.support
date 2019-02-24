@@ -10,7 +10,8 @@ import * as compression from "compression";
 import { RequestHandler } from "express-serve-static-core";
 import RouterPipeline from "../core/pipeline/pipeline.routers";
 import BlogModule from "../modules/blog/blog.module";
-import { BaseModuleImpl } from "../core/mvc/mvc.interfaces";
+import { BaseModuleImpl, Module } from "../core/mvc/mvc.interfaces";
+import AuthModule from "../modules/auth/auth.module";
 
 const dev = process.env.NODE_ENV !== "production";
 type Middlewares = RequestHandler[];
@@ -46,9 +47,12 @@ class HttpServer {
     }
 
     routes() {
-        const modules = <BaseModuleImpl[]>[BlogModule];
+        const modules : Module[] = [AuthModule, BlogModule];
         const routerPipeline = new RouterPipeline(modules);
         this.app.use(routerPipeline.router);
+        this.app.use("/admin", routerPipeline.router, (req: express.Request, res: express.Response) => {
+            res.sendStatus(401)
+        })
     }
 }
 

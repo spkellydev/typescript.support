@@ -1,4 +1,5 @@
 import { ReflectiveInjector } from "./injection.factory";
+import { EndpointMetadataOptions } from "../pipeline/pipeline.routers";
 const { ServiceMap, ControllerMap } = ReflectiveInjector;
 const ANNOTATIONS = "__annotations__";
 
@@ -40,7 +41,7 @@ export function Controller(route: string): ClassDecorator {
     }
 }
 
-export function Get(route: string): any {
+export function Get(route: EndpointMetadataOptions): any {
     return function (target: any, key: string, descriptor: PropertyDescriptor) {
         let routeFns = Reflect.getMetadata("routeCallbacks", target);
         if (!routeFns) {
@@ -48,7 +49,7 @@ export function Get(route: string): any {
         }
         
         routeFns.push({
-            route,
+            endpoint: route,
             method: "get",
             target: key
         });
@@ -63,7 +64,7 @@ export function Post(route: string): any {
         }
         
         routeFns.push({
-            route,
+            endpoint: route,
             method: "post",
             target: key
         });
@@ -78,7 +79,7 @@ export function Patch(route: string): any {
         }
         
         routeFns.push({
-            route,
+            endpoint: route,
             method: "patch",
             target: key
         });
@@ -93,7 +94,7 @@ export function Update(route: string): any {
         }
         
         routeFns.push({
-            route,
+            endpoint: route,
             method: "update",
             target: key
         });
@@ -108,7 +109,7 @@ export function Delete(route: string): any {
         }
         
         routeFns.push({
-            route,
+            endpoint: route,
             method: "delete",
             target: key
         });

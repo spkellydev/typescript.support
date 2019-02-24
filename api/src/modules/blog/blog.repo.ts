@@ -1,14 +1,14 @@
 import { PostEntity } from "../entities/post.entity";
 import BaseModel from "../../core/mvc/mvc.model";
-import { StringValidator } from "../../core/security/string.validator";
+import { PostValidator } from "../../core/security/string.validator";
 
 export default class BlogService extends BaseModel<PostEntity> {
     constructor() {
         super(PostEntity);
     }
 
-    getAllPosts() {
-        return this.repo.find();
+    async getAllPosts() {
+        return await this.repo.find();
     }
 
     async createPost(post: PostEntity) {
@@ -22,7 +22,7 @@ export default class BlogService extends BaseModel<PostEntity> {
     }
 
     private validate(post: PostEntity): boolean | {} {
-        const title =  StringValidator.validPostTitle(post.title);
+        const title =  PostValidator.validPostTitle(post.title);
         if (!title) {
             return {
                 valid: false,

@@ -1,13 +1,19 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Length, IsFQDN } from 'class-validator';
 
-@Entity()
+@Entity("Post")
 export class PostEntity {
     @PrimaryGeneratedColumn()
     id: number;
+
+    @Length(3, 255)
     @Column({ length: 255 })
     title: string;
+    
     @Column("text")
     content: string;
+
+    @IsFQDN()
     @Column()
     cover: string;
     author: number;
