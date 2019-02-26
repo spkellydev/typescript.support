@@ -27,7 +27,7 @@ export default class DatabaseManager {
         return await this.connection.then(async db => {
             return await db.getRepository(service);
         }).catch(err => {
-            throw new Error(err);
+            return err;
         })
     }
 }

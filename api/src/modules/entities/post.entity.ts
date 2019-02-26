@@ -1,5 +1,5 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToOne, ManyToOne } from 'typeorm';
-import { Length, IsFQDN } from 'class-validator';
+import { Length, IsFQDN, IsUrl } from 'class-validator';
 import { PostMetaEntity } from './postmeta.entity';
 import UserEntity from './user.entity';
 
@@ -15,7 +15,7 @@ export class PostEntity {
     @Column("text")
     content: string;
 
-    @IsFQDN()
+    @IsUrl()
     @Column()
     cover: string;
 

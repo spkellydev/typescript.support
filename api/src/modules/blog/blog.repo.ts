@@ -10,7 +10,8 @@ export default class BlogService extends BaseModel<PostEntity> {
     }
 
     async getAllPosts() {
-        return await this.repo.find();
+        const posts =  await this.repo.find({ relations: ["metadata", "author"] });
+        return posts;
     }
 
     async createPost(p: PostEntity, m: PostMetaEntity, token: string) {
@@ -21,6 +22,7 @@ export default class BlogService extends BaseModel<PostEntity> {
             cover: p.cover
         });
         const postErrors = await validate(post);
+        if (postErrors.length > 0) return { error: postErrors }
         // check for post errors
         const meta = new PostMetaEntity();
         meta.build({
@@ -32,6 +34,7 @@ export default class BlogService extends BaseModel<PostEntity> {
         let jwt = await decode(token, "dummy_secret");
         post.author = jwt.sub;
         const metaErrors = await validate(meta);
+        if (metaErrors.length > 0) return { error: metaErrors }
         // check for meta errors
         let saved = await this.repo.save(post);
         return saved;

@@ -8,7 +8,9 @@ export class PostMetaEntity {
     id: number;
 
     @Length(0, 120)
-    @Column()
+    @Column({
+        unique: true
+    })
     slug: string;
 
     @Length(100, 255)

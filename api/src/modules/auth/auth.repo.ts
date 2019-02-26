@@ -37,8 +37,8 @@ export default class AuthService extends BaseModel<UserEntity> {
             // TODO: reduce errors
             return "errors creating user";
         }
-        const foundUser = await this.repo.find({ email: user.email });
-        if (foundUser.length > 0) return "cannot create user";
+        const foundUser = await this.getUserByEmail(user.email);
+        if (!foundUser) return "cannot create user";
 
         const saved = await this.repo.save(user);
         return this.tokenForUser(saved);
@@ -51,11 +51,21 @@ export default class AuthService extends BaseModel<UserEntity> {
     async signInUser(user: UserEntity): Promise<Token | string> {
         const errors = await validate(user);
         if (errors.length > 0) return "errors creating users";
-        const foundUser = await this.repo.find({ email: user.email });
-        if (foundUser.length < 1) return "error finding user";
+        const foundUser = await this.getUserByEmail(user.email);
+        if (!foundUser) return "error finding user";
 
-        const validUser = await foundUser[0].validatePassword(user.password);
+        const validUser = await foundUser.validatePassword(user.password);
         if (!validUser) return "error logging in";
-        return this.tokenForUser(foundUser[0]);
+        const token = this.tokenForUser(foundUser);
+        if (token instanceof String) return token;
+        else return token.token;
+    }
+
+    private async getUserByEmail(email: string) {
+        return await this.repo.createQueryBuilder("user")
+            .select()
+            .addSelect("user.password")
+            .where("user.email = :email", { email })
+            .getOne()
     }
 }

@@ -17,7 +17,12 @@ export default class AuthController implements BaseControllerImpl {
         const { email, password } = req.body;
         const user = new UserEntity();
         user.build({ email, password });
-        const token: Token | string = await this.service.signInUser(user);
+        let token : Token | string;
+        try {
+            token = await this.service.signInUser(user);
+        } catch(err) {
+            console.log(err);
+        }
         if (token instanceof String) status = 403;
         res.status(status).json({ token })
     }
@@ -28,7 +33,12 @@ export default class AuthController implements BaseControllerImpl {
         const { email, password } = req.body;
         const user = new UserEntity();
         user.build({ email, password });
-        const token : Token | string = await this.service.createUser(user);
+        let token : Token | string;
+        try {
+            token = await this.service.createUser(user);
+        } catch(err) {
+            console.log(err);
+        }
         if (token instanceof String) status = 403;
         res.status(status).json(token);
     }

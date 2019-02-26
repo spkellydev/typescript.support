@@ -29,8 +29,13 @@ class BlogController implements BaseControllerImpl, ControllerCrud {
     create = async (req: Request, res: Response) => {
         const { post, meta } = req.body;
         const token = req.headers["authorization"];
-        const saved = await this.service.createPost(post, meta, token);
-        res.json(saved);
+        let result;
+        try {
+            result = await this.service.createPost(post, meta, token);
+        } catch(err) {
+            result = err;
+        }
+        res.json(result);
     }
 
     @Update({
