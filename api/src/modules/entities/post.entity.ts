@@ -1,5 +1,5 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToOne, ManyToOne } from 'typeorm';
-import { Length, IsFQDN, IsUrl } from 'class-validator';
+import { Length, IsUrl } from 'class-validator';
 import { PostMetaEntity } from './postmeta.entity';
 import UserEntity from './user.entity';
 

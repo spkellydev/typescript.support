@@ -3,6 +3,7 @@ import { Service, Controller, Get, Post, Update, Delete } from "../../../core/in
 import { BaseControllerImpl, ControllerCrud } from "../../../core/mvc/mvc.controller";
 import BlogService from "../blog.repo";
 import AuthGuard from "../../../core/security/auth.guard";
+import { PostCategoryEntity } from "../../entities/postcategory.entity";
 
 const Guard = new AuthGuard();
 
@@ -14,12 +15,6 @@ class BlogController implements BaseControllerImpl, ControllerCrud {
     @Get("/")
     readAll = async (req: Request, res: Response) => {
         res.json({ posts: await this.service.getAllPosts() })
-    }
-
-    @Get("/post/:slug")
-    readSingle = async (req: Request, res: Response) => {
-        const { slug } = req.params;
-        res.json({ slug });
     }
 
     @Post({
@@ -52,6 +47,30 @@ class BlogController implements BaseControllerImpl, ControllerCrud {
     })
     delete(req: Request, res: Response): void {
         throw new Error("Method not implemented.");
+    }
+
+    @Get("/post/categories")
+    readAllCategories = async (req: Request, res: Response): Promise<void> => {
+        const categories = await this.service.getCategories();
+        res.json(categories);
+    }
+
+    @Post("/post/category/create")
+    createCategory = async (req: Request, res: Response): Promise<void> => {
+        const { name } = req.body;
+        let cat: PostCategoryEntity;
+        try {
+            cat = await this.service.createCategory(name);
+        } catch(err) {
+            console.log(err);
+        }
+        res.json(cat);
+    }
+
+    @Get("/post/:slug")
+    readSingle = async (req: Request, res: Response) => {
+        const { slug } = req.params;
+        res.json({ slug });
     }
 }
 

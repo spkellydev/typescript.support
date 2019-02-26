@@ -37,7 +37,7 @@ export default class AuthService extends BaseModel<UserEntity> {
             // TODO: reduce errors
             return "errors creating user";
         }
-        const foundUser = await this.getUserByEmail(user.email);
+        const foundUser = await this.repo.find({ email: user.email });
         if (!foundUser) return "cannot create user";
 
         const saved = await this.repo.save(user);
@@ -61,6 +61,11 @@ export default class AuthService extends BaseModel<UserEntity> {
         else return token.token;
     }
 
+    /**
+     * Password is hidden from select statements by default, so we need to override the default query
+     * to include password
+     * @param email email to select against
+     */
     private async getUserByEmail(email: string) {
         return await this.repo.createQueryBuilder("user")
             .select()

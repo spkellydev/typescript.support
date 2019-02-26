@@ -1,6 +1,8 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn, BeforeInsert, ManyToMany, JoinTable } from "typeorm";
 import { Length } from "class-validator";
 import { PostEntity } from "./post.entity";
+import StringUtils from "../../core/utils/string.utils";
+import { PostCategoryEntity } from "./postcategory.entity";
 
 @Entity("PostMeta")
 export class PostMetaEntity {
@@ -23,6 +25,11 @@ export class PostMetaEntity {
     @OneToOne(type => PostEntity)
     @JoinColumn()
     post: PostEntity
+
+    @BeforeInsert()
+    safeSlug() {
+        this.slug = StringUtils.safeSlug(this.slug);
+    }
 
     build({ slug, description, categoryId, ...removed }) {
         this.slug = slug;
